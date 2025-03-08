@@ -5,8 +5,7 @@ import json
 import sys
 from datetime import datetime
 import os
-os.environ['PATH'] = '/usr/local/bin:' + os.environ.get('PATH', '')
-LLM_API_KEY = os.getenv('XAI_API_KEY')
+import re
 
 # Third-party imports
 try:
@@ -31,15 +30,28 @@ def init_logger() -> logging.Logger:
     )
     return logging.getLogger()
 
-def load_mcp_config(path: str = "mcp_config.json") -> dict:
+def load_mcp_config(request: str = "", path: str = "mcp_config.json") -> dict:
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        config = json.load(f)
+    
+    matched_commands = re.findall(r'@([^\s]+)', request)
+    if not matched_commands:
+        return {}
+    
+    unique_commands = []
+    [unique_commands.append(cmd) for cmd in matched_commands if cmd not in unique_commands]
+    
+    filtered_config = {}
+    for cmd in unique_commands:
+        if cmd in config: filtered_config[cmd] = config[cmd]
+    
+    return filtered_config
 
 def load_system_prompt(path: str = "system_prompt.txt") -> str:
     with open(path, encoding="utf-8") as f:
         return str(f)
 
-def load_llm_config(path: str="llm_config.yaml") -> dict:
+def load_llm_config(path: str="llm_config.yaml") -> dict[str, str|float]:
     try:
         with open(path, encoding="utf-8") as file:
             config = yaml.safe_load(file)
@@ -51,7 +63,7 @@ def load_llm_config(path: str="llm_config.yaml") -> dict:
 async def run(request: str) -> None:
     """Initializes MCP tools and returns tools and cleanup function."""
     try:
-        mcp_config = load_mcp_config()
+        mcp_config = load_mcp_config(request)
         mcp_tools, cleanup = await convert_mcp_to_langchain_tools(
             mcp_config,
             init_logger()
@@ -59,10 +71,11 @@ async def run(request: str) -> None:
 
         llm_config = load_llm_config()
         llm = ChatOpenAI(
-            temperature=llm_config.get("temperature"),
-            openai_api_base=llm_config.get("base_url"),
-            openai_api_key=LLM_API_KEY,
-            model=llm_config.get("model")
+            temperature=float(llm_config.get("temperature", 0.8)),
+            base_url=str(llm_config.get("base_url")),
+            api_key=os.getenv("XAI_API_KEY"),
+            model=str(llm_config.get("model")),
+            verbose=True
         )
 
         system_prompt = load_system_prompt()
@@ -77,12 +90,9 @@ async def run(request: str) -> None:
 
         result = await agent.ainvoke({'messages': messages})
 
-        # the last message should be an AIMessage
         response = result['messages'][-1].content
 
-        # print('\x1b[36m')  # color to cyan
         print(response)
-        # print('\x1b[0m')   # reset the color
 
     finally:
         if cleanup is not None:

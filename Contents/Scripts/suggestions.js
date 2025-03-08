@@ -3,9 +3,10 @@ function runWithString(input) {
     const keywords = [
       'filesystem',
       'fetch',
-      'tavily-search',
+      'tavily_search',
       'shell',
-      'spotify',
+      'spotify-edit',
+      'spotify-play',
       'things',
       'calendar'
     ];
