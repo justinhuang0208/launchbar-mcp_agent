@@ -1,2 +1,3 @@
 base_url: "https://api.x.ai/v1"
 model: "grok-2"
+LLM_KEY_NAME: "XAI_API_KEY"

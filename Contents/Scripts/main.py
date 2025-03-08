@@ -6,6 +6,7 @@ import sys
 from datetime import datetime
 import os
 import re
+from dotenv import load_dotenv
 
 # Third-party imports
 try:
@@ -21,6 +22,7 @@ except ImportError as e:
 # Local application imports
 from langchain_mcp_tools import convert_mcp_to_langchain_tools
 
+load_dotenv()
 
 # A very simple logger
 def init_logger() -> logging.Logger:
@@ -73,7 +75,7 @@ async def run(request: str) -> None:
         llm = ChatOpenAI(
             temperature=float(llm_config.get("temperature", 0.8)),
             base_url=str(llm_config.get("base_url")),
-            api_key=os.getenv("XAI_API_KEY"),
+            api_key=os.environ.get(llm_config.get("LLM_KEY_NAME")),
             model=str(llm_config.get("model")),
             verbose=True
         )

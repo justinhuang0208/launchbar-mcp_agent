@@ -12,7 +12,7 @@ try:
     result = subprocess.run(
         [
             '/Users/justin/opt/anaconda3/envs/myenv/bin/python',
-            '/Users/justin/Library/Application Support/LaunchBar/Actions/Launchbar_Agent.lbaction/Contents/Scripts/main.py',
+            '/Users/justin/Library/Application Support/LaunchBar/Actions/mcp_agent.lbaction/Contents/Scripts/main.py',
             argument
         ],
         text=True,
