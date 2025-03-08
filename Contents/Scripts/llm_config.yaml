@@ -1,0 +1,3 @@
+base_url: "https://api.x.ai/v1"
+model: "grok-2"
+temperature: 0.8

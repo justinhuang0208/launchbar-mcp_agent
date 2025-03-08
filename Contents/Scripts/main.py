@@ -13,6 +13,7 @@ try:
     from langchain.schema import HumanMessage
     from langgraph.prebuilt import create_react_agent
     from langchain_openai import ChatOpenAI
+    import yaml
 except ImportError as e:
     print(f'\nError: Required package not found: {e}')
     print('Please ensure all required packages are installed\n')
@@ -38,20 +39,30 @@ def load_system_prompt(path: str = "system_prompt.txt") -> str:
     with open(path, encoding="utf-8") as f:
         return str(f)
 
+def load_llm_config(path: str="llm_config.yaml") -> dict:
+    try:
+        with open(path, encoding="utf-8") as file:
+            config = yaml.safe_load(file)
+        return config if config is not None else {}
+    except Exception as e:
+        print(f"Error occurred while reading the configuration file: {e}")
+        return {}
+
 async def run(request: str) -> None:
     """Initializes MCP tools and returns tools and cleanup function."""
     try:
-        mcp_configs = load_mcp_config()
+        mcp_config = load_mcp_config()
         mcp_tools, cleanup = await convert_mcp_to_langchain_tools(
-            mcp_configs,
+            mcp_config,
             init_logger()
         )
 
+        llm_config = load_llm_config()
         llm = ChatOpenAI(
-            temperature=0.8,
-            openai_api_base="https://api.x.ai/v1",
+            temperature=llm_config.get("temperature"),
+            openai_api_base=llm_config.get("base_url"),
             openai_api_key=LLM_API_KEY,
-            model="grok-2"
+            model=llm_config.get("model")
         )
 
         system_prompt = load_system_prompt()
