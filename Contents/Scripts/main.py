@@ -51,7 +51,7 @@ def load_mcp_config(request: str = "", path: str = "mcp_config.json") -> dict:
 
 def load_system_prompt(path: str = "system_prompt.txt") -> str:
     with open(path, encoding="utf-8") as f:
-        return str(f)
+        return f.read()
 
 def load_llm_config(path: str="llm_config.yaml") -> dict[str, str|float]:
     try:
