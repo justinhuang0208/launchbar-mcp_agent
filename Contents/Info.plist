@@ -5,7 +5,7 @@
 	<key>CFBundleIconFile</key>
 	<string>🤖</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.yourcompany.LaunchBar.action.NewAction</string>
+	<string>justinhuang0208.LaunchBar.action.Agent</string>
 	<key>CFBundleName</key>
 	<string>Agent</string>
 	<key>LBDebugLogEnabled</key>
@@ -62,5 +62,7 @@
 			<string>suggestions.js</string>
 		</dict>
 	</dict>
+	<key>LBTextInputTitle</key>
+	<string>Type your prompt</string>
 </dict>
 </plist>
