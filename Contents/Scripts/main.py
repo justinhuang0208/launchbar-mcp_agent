@@ -83,7 +83,7 @@ async def run(request: str) -> None:
 
         llm_config = load_llm_config()
         llm = ChatOpenAI(
-            temperature=float(llm_config.get("temperature", 0.8)),
+            temperature=float(llm_config.get("temperature", 1)),
             base_url=str(llm_config.get("base_url")),
             api_key=os.environ.get(llm_config.get("LLM_KEY_NAME")),
             model=str(llm_config.get("model")),
